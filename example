@@ -20,3 +20,6 @@
     }
     return false;
   }
+
+
+oninput="this.value=this.value.toUpperCase()"
