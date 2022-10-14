@@ -5,3 +5,18 @@
                                                 placeholder="First Name" required>
                                         </mat-form-field>
                                     </div>
+
+
+//for checking form is valid or invalid
+  public checkFormGroupValid(formGroup: any): boolean {
+    if (formGroup.invalid) {
+      {
+        Object.keys(formGroup.controls).forEach(field => {
+          const control = formGroup.get(field);
+          control.markAsTouched({ onlySelf: true });
+        });
+        return true;
+      }
+    }
+    return false;
+  }
