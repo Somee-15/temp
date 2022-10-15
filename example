@@ -56,3 +56,105 @@ export class Util {
         return null;
     }
 }
+
+
+import { Injectable } from '@angular/core';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Observable, throwError, of } from 'rxjs';
+import { map, catchError } from 'rxjs/operators';
+import { environment } from '../../environments/environment';
+import { CONSTANTS } from '../constant/constants';
+import { SharedServiceService } from './shared-service.service';
+@Injectable({
+  providedIn: 'root'
+})
+export class HttpRequestService {
+  private apiDomain: string = environment.SERVICE_API.MOCK_URL;
+  constructor(
+    private _httpClient: HttpClient,
+    private sharedService: SharedServiceService,
+  ) { }
+
+  getAccessToken() {
+
+    return 'Bearer ' + this.sharedService.access_token;
+  }
+
+  createToken(headerConfig) {
+    if (headerConfig && headerConfig.authorization && headerConfig.authorization.newToken) {
+      //  console.log('email verif token');
+      return 'Bearer ' + headerConfig.authorization.token;
+    } else {
+      return headerConfig && headerConfig.authorization ? this.getAccessToken() : 'Basic ' + this.sharedService.basic_auth;
+    }
+  }
+  /**
+   * For setting the HTTP Call headers
+   */
+  private _getHttpHeaders(headerConfig) {
+    return new HttpHeaders({
+      'Content-Type': headerConfig && headerConfig.contentType ? headerConfig.contentType : 'application/json',
+      'Authorization': this.createToken(headerConfig)
+    });
+  }
+
+  /**
+   * Generic function which handles all the service calls
+   * @param requestOption for service call options like Request Type, Url , body etc..
+   */
+  public request(requestOption): Observable<any> {
+    return this._httpClient.request(
+      requestOption.method,
+      this.apiDomain + requestOption.url,
+      {
+        headers: this._getHttpHeaders(requestOption.headerConfig),
+        params: requestOption.params,
+        body: requestOption.body,
+        observe: 'response' as 'body',
+        responseType: 'json'
+      })
+      .pipe(
+        map(data => this._extractData(data)),
+        catchError(data => this._handleError(data))
+      );
+  }
+
+  private _extractData = (response): any => {
+    return { data: response.body, status: response.status };
+  }
+
+  private _handleError = (error): Observable<any> => {
+    return throwError(error);
+  }
+}
+
+
+public POST = "POST";
+
+
+  public login(details): Observable<any> {
+    return this._httpReqService.request({
+      method: this.POST,
+      headerConfig: { authorization: false },
+      url: environment.URL.login,
+      body: details
+    }).pipe(map(response => this._extractResponse(response)))
+
+  }
+  
+  
+  private _extractResponse(response): Observable<any> {
+    console.log(`Response From Backend`, response)
+    return response;
+  }
+}
+
+this._configService.saveBenefMaker(userobj).pipe(takeWhile(() => this._isComponentAlive)).subscribe(
+      { next: this.saveBenSuccessHandler, error: this.saveBenfMakerErrorHandler }
+    )
+    
+    
+    private _verifybenefCheckerError = (err) => {
+    this.apiFailureErrorDisplay(err);
+  }
+
