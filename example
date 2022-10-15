@@ -23,3 +23,36 @@
 
 
 oninput="this.value=this.value.toUpperCase()"
+
+
+
+export class Util {
+    public static getFormData(keyname: string, response: any, disabledInfo: any): { value: number | boolean | string, disabled: boolean } {
+        return { value: response[keyname] ? response[keyname] : '', disabled: disabledInfo[keyname] ? disabledInfo[keyname] : false };
+    }
+
+    public static formatDate(date: string): string {
+        if (date) {
+            const day = Util.formatDayMonth(date.substr(0, date.indexOf('-')));
+            const month = Util.formatDayMonth(date.substr(date.indexOf('-') + 1, date.lastIndexOf('-') - (date.indexOf('-') + 1)));
+            const year = date.substr(date.lastIndexOf('-') + 1, date.length);
+            return `${year} - ${month} - ${day}`;
+        }
+        return '';
+    }
+
+    public static formatDayMonth(value: string): string {
+        if (Number(value) < 9) {
+            value = `0${Number(value)}`;
+        }
+        return value;
+    }
+
+    public static yyyymmddFromat(date: string): string {
+        if(date){
+        let tempcheck = date.split('-');
+        return tempcheck[2] + "-" + tempcheck[1] + "-" + tempcheck[0]
+        }
+        return null;
+    }
+}
